@@ -1,0 +1,30 @@
+---
+title: "Wine Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+
+```
+
+
+```{r data read, cache=T}
+
+# loading the dataset
+
+```
+### Plot1
+
+
+### Amount of wines we take into acccount
+```{r}
+RedWineCount = 100
+
+valueBox(format(RedWineCount, big.mark=","), 
+         icon = "fa-solid fa-wine-glass")
+
+```
