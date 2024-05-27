@@ -1,0 +1,79 @@
+
+/* Change the background color of the header */
+.skin-blue .main-header .navbar {
+    background-color: #f27f7f; /* Change to your desired color */
+  }
+  
+
+  /* Change the background color of the header */
+.skin-blue .main-header .navbar {
+    background-color: #d85c5c; /* Change to your desired color */
+}
+
+/* Change the background color of the header when active (clicked) */
+.skin-blue .main-header .navbar:active {
+    background-color: #990c0c; /* Change to your desired active color */
+}
+
+/* Change the background color of the header on hover */
+.skin-blue .main-header:hover {
+  background-color: #ffcccc; /* Change to your desired color */
+  color: #ffffff; /* Change to your desired text color */
+}
+
+  /* Change the color of the logo text */
+  .skin-blue .main-header .logo {
+    background-color: #990c0c; /* Change to your desired color #5884c7 */
+    color: #ffffff; /* Change to your desired text color */
+  }
+  
+  /* Change the color of the header text (title) */
+  .skin-blue .main-header .navbar .navbar-static-top {
+    color: #f27f7f; /* Change to your desired text color */
+  }
+
+  .header:active {
+    color: #ffffff; /* Change text color to white */
+}
+
+  .skin-blue .main-sidebar {
+    background-color: #d85c5c; /* Change to your desired color */
+  }
+  
+  
+  /* Change the color of the sidebar menu item hover */
+  .skin-blue .main-sidebar .sidebar-menu a:hover {
+    background-color: #f1a3a3; /* Change to your desired active item background color */
+  }
+  
+  /* Change the color of the active sidebar menu item */
+  .skin-blue .main-sidebar .sidebar-menu .active a {
+    background-color: rgb(234, 189, 189); /* Change to your desired hover background color */
+  }
+
+
+
+
+/* Change the color of the menu items */
+.skin-blue .main-sidebar .sidebar-menu a {
+  color: #ffffff; /* Change to white */
+}
+
+/* Change the color of the menu item text on hover */
+.skin-blue .main-sidebar .sidebar-menu a:hover {
+  color: #ffffff; /* Change to white */
+}r
+
+/* Change the color of the active menu item text */
+.skin-blue .main-sidebar .sidebar-menu .active a {
+  color: #ffffff; /* Change to white */
+}
+
+
+.skin-blue .main-header:hover .navbar {
+  background-color: #ffcccc; /* Change to your desired color */
+  color: #ffffff; /* Change to your desired text color */
+}
+
+
+
