@@ -7,14 +7,17 @@ library(DT)
 ui <- dashboardPage(
   dashboardHeader(title = "Wine Dashboard"),
   dashboardSidebar(
-    tags$img(src = "PP_logotyp_ANG_WHITE.png", height = 40, width = 220),
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+    ),
     sidebarMenu(
       menuItem("Basic Informations", tabName = "BasicInfo", icon = icon("info")),
       menuItem("Details Informations", tabName = "DetaiInfo", icon = icon("book")),
       menuItem("Prices in Countries", tabName = "MoreInformations", icon = icon("book-open")),
       menuItem("Ratings", tabName = "Ratings", icon = icon("star")),
       menuItem("World Map", tabName = "World", icon = icon("globe"))
-    )
+    ),
+    tags$img(src = "PP_logotyp_ANG_WHITE.png", height = 40, width = 220)
   ),
   dashboardBody(
     tags$head(
@@ -25,8 +28,8 @@ ui <- dashboardPage(
               box(
                 column(width = 4,
                        selectInput("chooseDataset", "Choose Wine Type",
-                                   choices = c("Red", "Rose", "Sparkling", "White"),
-                                   selected = "Red")),
+                                   choices = c("All", "Red", "Rose", "Sparkling", "White"),
+                                   selected = "All")),
                 
                 valueBoxOutput("rowCountBox"),
                 valueBoxOutput("rowPriceBox"),
@@ -44,8 +47,8 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 2,
                        selectInput("chooseDataset2", "Choose Wine Type",
-                                   choices = c("Red", "Rose", "Sparkling", "White"),
-                                   selected = "Red")
+                                   choices = c("All", "Red", "Rose", "Sparkling", "White"),
+                                   selected = "All")
                 )
               ),
               fluidRow(
@@ -83,14 +86,17 @@ server <- function(input, output, session) { # Dodaj argument `session`
   # choosing dataset basing on the input
   current_data_1 <- reactive({
     switch(input$chooseDataset,
+           "All" = read.csv("datasets/all.csv"),
            "Red" = read.csv("datasets/Red.csv"),
            "Rose" = read.csv("datasets/Rose.csv"),
            "Sparkling" = read.csv("datasets/Sparkling.csv"),
-           "White" = read.csv("datasets/White.csv")
+           "White" = read.csv("datasets/White.csv"),
+           
     )
   })
   current_data_2 <- reactive({
     switch(input$chooseDataset2,
+           "All" = read.csv("datasets/all.csv"),
            "Red" = read.csv("datasets/Red.csv"),
            "Rose" = read.csv("datasets/Rose.csv"),
            "Sparkling" = read.csv("datasets/Sparkling.csv"),
