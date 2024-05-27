@@ -106,6 +106,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
   
   output$wineImage <- renderUI({
     image_path <- switch(input$chooseDataset,
+                         "All" = "all.jpg",
                          "Red" = "red_wine.jpg",
                          "Rose" = "rose_wine.jpg",
                          "Sparkling" = "sparkling_wine.jpg",
