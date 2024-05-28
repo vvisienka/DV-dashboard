@@ -11,9 +11,11 @@ ui <- dashboardPage(skin="red",
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
     sidebarMenu(
-      menuItem(selectInput("chooseDataset", "Choose Wine Type",
+      br(),
+      selectInput("chooseDataset", "Choose Wine Type",
                              choices = c("All", "Red", "Rose", "Sparkling", "White"),
-                             selected = "All")),
+                             selected = "All"),
+      br(),
       menuItem("Basic Informations", tabName = "BasicInfo", icon = icon("info")),
       menuItem("Details Informations", tabName = "DetaiInfo", icon = icon("book")),
       menuItem("Prices in Countries", tabName = "MoreInformations", icon = icon("book-open")),
@@ -103,7 +105,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
       nrow(current_data()),
       "Number of different wines",
       icon = icon("wine-glass"),
-      color = "red"
+      color="red"
     )
   })
   
