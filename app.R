@@ -11,6 +11,9 @@ ui <- dashboardPage(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
     sidebarMenu(
+      menuItem(selectInput("chooseDataset", "Choose Wine Type",
+                             choices = c("All", "Red", "Rose", "Sparkling", "White"),
+                             selected = "All")),
       menuItem("Basic Informations", tabName = "BasicInfo", icon = icon("info")),
       menuItem("Details Informations", tabName = "DetaiInfo", icon = icon("book")),
       menuItem("Prices in Countries", tabName = "MoreInformations", icon = icon("book-open")),
@@ -26,11 +29,6 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "BasicInfo",
               box(
-                column(width = 4,
-                       selectInput("chooseDataset", "Choose Wine Type",
-                                   choices = c("All", "Red", "Rose", "Sparkling", "White"),
-                                   selected = "All")),
-                
                 valueBoxOutput("rowCountBox"),
                 valueBoxOutput("rowPriceBox"),
                 footer = uiOutput("wineImage"),
@@ -44,13 +42,6 @@ ui <- dashboardPage(
               )
       ),
       tabItem(tabName = "DetaiInfo",
-              fluidRow(
-                column(width = 2,
-                       selectInput("chooseDataset2", "Choose Wine Type",
-                                   choices = c("All", "Red", "Rose", "Sparkling", "White"),
-                                   selected = "All")
-                )
-              ),
               fluidRow(
                 column(width = 12,
                        DTOutput("table")
@@ -84,7 +75,7 @@ ui <- dashboardPage(
 server <- function(input, output, session) { # Dodaj argument `session`
   
   # choosing dataset basing on the input
-  current_data_1 <- reactive({
+  current_data <- reactive({
     switch(input$chooseDataset,
            "All" = read.csv("datasets/all.csv"),
            "Red" = read.csv("datasets/Red.csv"),
@@ -92,15 +83,6 @@ server <- function(input, output, session) { # Dodaj argument `session`
            "Sparkling" = read.csv("datasets/Sparkling.csv"),
            "White" = read.csv("datasets/White.csv"),
            
-    )
-  })
-  current_data_2 <- reactive({
-    switch(input$chooseDataset2,
-           "All" = read.csv("datasets/all.csv"),
-           "Red" = read.csv("datasets/Red.csv"),
-           "Rose" = read.csv("datasets/Rose.csv"),
-           "Sparkling" = read.csv("datasets/Sparkling.csv"),
-           "White" = read.csv("datasets/White.csv")
     )
   })
   
@@ -118,7 +100,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
   # making value box 1
   output$rowCountBox <- renderValueBox({
     valueBox(
-      nrow(current_data_1()),
+      nrow(current_data()),
       "Number of different wines",
       icon = icon("wine-glass"),
       color = "red"
@@ -126,7 +108,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
   })
   
   output$rowPriceBox <- renderValueBox({
-    avg_price <- mean(current_data_1()$Price, na.rm = TRUE)
+    avg_price <- mean(current_data()$Price, na.rm = TRUE)
     avg_price_rounded <- round(avg_price, 2)
     
     valueBox(
@@ -140,7 +122,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
   # making value box 2
   output$rowCountBox2 <- renderValueBox({
     valueBox(
-      nrow(current_data_1()),
+      nrow(current_data()),
       "Other Data",
       icon = icon("info"),
       color = "blue"
@@ -150,7 +132,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
   # making barplot for top 5 frequent regions
   output$regionPlot <- renderPlotly({
     
-    data_aggregated <- current_data_1() %>%
+    data_aggregated <- current_data() %>%
       count(Region, Country) 
     
     data_aggregated$n <- as.numeric(data_aggregated$n)
@@ -200,11 +182,11 @@ server <- function(input, output, session) { # Dodaj argument `session`
   
   # Display the first table
   output$table <- renderDT({
-    prettyTable(current_data_2())
+    prettyTable(current_data())
   })
   
   observe({
-    data <- current_data_2()
+    data <- current_data()
     updateSelectInput(session, "year", label = "Year", choices = unique(data$Year))
     updateSelectInput(session, "country", label = "Country", choices = unique(data$Country))
   })
@@ -212,7 +194,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
   output$expensiveWineInfo <- renderText({
     req(input$year, input$country)
     
-    filtered_data <- current_data_2() %>%
+    filtered_data <- current_data() %>%
       filter(Year == input$year, Country == input$country)
     
     expensive_wine <- filtered_data[which.max(filtered_data$Price), ]
