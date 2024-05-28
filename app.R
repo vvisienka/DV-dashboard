@@ -29,26 +29,45 @@ ui <- dashboardPage(skin="red",
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
     tabItems(
-      tabItem(tabName = "BasicInfo",
-              box(
-                valueBoxOutput("rowCountBox"),
-                valueBoxOutput("rowPriceBox"),
-                footer = uiOutput("wineImage"),
-                
-                width = 12
+      tabItem(tabName = "BasicInfo", 
+              fluidRow(
+                box(
+                  width = 12,
+                  valueBoxOutput("rowCountBox"),
+                  valueBoxOutput("rowPriceBox"),
+                  footer = uiOutput("wineImage", style = "width: 100%; height: 100%;")
+                )
               ),
               fluidRow(
-                column(width = 12,
-                       plotlyOutput("regionPlot")
+                box(
+                  width = 12,
+                  plotlyOutput("regionPlot"),
+                  style = "width: 100%; overflow-x: scroll;"
+                 
                 )
               )
       ),
       tabItem(tabName = "DetaiInfo",
               fluidRow(
-                column(width = 12,
-                       DTOutput("table")
+                column(
+                  width = 12,
+                  align = "center",
+                  div(
+                    style = "background-color: #d36d6d; height: 100px;",
+                    h3(style = "font-size: 50px; margin-top: 5px;", "Interactive Table for Wines"),
+                    p(style = "font-size: 16px; margin-top: 10px; margin-bottom: 30px;", "In case you are searching for a wine with specific criteria, use this tool to find the best-fitted wine. \n")
+                  )
+                )
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  DTOutput("table"),
+                  style = "margin-top: 10px"
+                  
                 )
               )
+
       ),
       tabItem(tabName = "MoreInformations",
               fluidPage(
@@ -83,7 +102,7 @@ server <- function(input, output, session) { # Dodaj argument `session`
            "Red" = read.csv("datasets/Red.csv"),
            "Rose" = read.csv("datasets/Rose.csv"),
            "Sparkling" = read.csv("datasets/Sparkling.csv"),
-           "White" = read.csv("datasets/White.csv"),
+           "White" = read.csv("datasets/White.csv")
            
     )
   })
