@@ -1,68 +1,62 @@
 
-/* Change the background color of the header */
-.skin-blue .main-header .navbar {
-    background-color: #f27f7f;
-  }
-  
+/* --- HEADER --- */
 
-  /* Change the background color of the header */
-.skin-blue .main-header .navbar {
-    background-color: #d85c5c;
+
+/* colors */
+
+.skin-red .main-header .navbar {
+  background-color: #ad3c3c;
 }
 
-/* Change the background color of the header when active (clicked) */
-.skin-blue .main-header .navbar:active {
-    background-color: #990c0c;
-}
-
-/* Change the background color of the header on hover */
-.skin-blue .main-header:hover {
-  background-color: #ffcccc;
+.skin-red .main-header .logo {
+  background-color: #990c0c;
   color: #ffffff;
 }
 
-  /* Change the color of the logo text */
-  .skin-blue .main-header .logo {
-    background-color: #990c0c;
-    color: #ffffff;
-  }
-  
-  /* Change the color of the header text (title) */
-  .skin-blue .main-header .navbar .navbar-static-top {
-    color: #f27f7f;
-  }
-
-  .header:active {
-    color: #ffffff;
+.skin-red .main-header .logo:hover{
+  background-color: #990c0c;
+  color: #ffffff;
 }
 
-  .skin-blue .main-sidebar {
-    background-color: #d85c5c;
-  }
-  
-  
-  /* Change the color of the sidebar menu item hover */
-  .skin-blue .main-sidebar .sidebar-menu a:hover {
-    background-color: #f1a3a3;
-  }
-  
-  /* Change the color of the active sidebar menu item */
-  .skin-blue .main-sidebar .sidebar-menu .active a {
-    background-color: rgb(234, 189, 189);
+.skin-red .main-header .sidebar-toggle:hover {
+  color: #ad3c3c !important;
+  background-color: #ffffff !important;
 }
 
-/* Set fixed position of dashboard header */
+
+
+
+
+/* fixed position */
 .main-header {
   position: fixed;
   width: 100%;
-  z-index: 1000; /* Ensures header is above other content */
+  z-index: 1000;
 }
 
-.content-wrapper {
-  margin-top: 50px;
+
+
+/* --- SIDE BAR ---*/
+
+/* colors */
+/*
+
+.skin-red .main-sidebar {
+  background-color: #d85c5c;
 }
 
-/* Set fixed position of sidebar */
+.skin-red .main-sidebar .sidebar-menu a:hover {
+  background-color: #f1a3a3;
+}
+
+.skin-red .main-sidebar .sidebar-menu .active a {
+  background-color: rgb(234, 189, 189);
+}
+
+*/
+
+
+/* fixed position */
 .main-sidebar {
   position: fixed;
   height: 100%;
@@ -83,26 +77,15 @@
 
 
 
-/* Change the color of the menu items */
-.skin-blue .main-sidebar .sidebar-menu a {
-  color: #ffffff; /* Change to white */
-}
-
-/* Change the color of the menu item text on hover */
-.skin-blue .main-sidebar .sidebar-menu a:hover {
-  color: #ffffff; /* Change to white */
-}r
-
-/* Change the color of the active menu item text */
-.skin-blue .main-sidebar .sidebar-menu .active a {
-  color: #ffffff; /* Change to white */
+/* --- WRAPPER ---*/
+.content-wrapper {
+  margin-top: 50px;
 }
 
 
-.skin-blue .main-header:hover .navbar {
-  background-color: #ffcccc; /* Change to your desired color */
-  color: #ffffff; /* Change to your desired text color */
-}
+/* --- ICONS --- */
+
+
 
 
 

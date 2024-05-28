@@ -4,7 +4,7 @@ library(plotly)
 library(dplyr)
 library(DT)
 
-ui <- dashboardPage(
+ui <- dashboardPage(skin="red",
   dashboardHeader(title = "Wine Dashboard"),
   dashboardSidebar(
     tags$head(
