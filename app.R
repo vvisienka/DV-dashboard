@@ -22,7 +22,7 @@ ui <- dashboardPage(skin="red",
       menuItem("Ratings", tabName = "Ratings", icon = icon("star")),
       menuItem("World Map", tabName = "World", icon = icon("globe"))
     ),
-    tags$img(src = "PP_logotyp_ANG_WHITE.png", height = 40, width = 220)
+    tags$img(src = "PP_logotyp_ANG_RGB.png", height = 40, width = 220)
   ),
   dashboardBody(
     tags$head(
@@ -48,14 +48,15 @@ ui <- dashboardPage(skin="red",
               )
       ),
       tabItem(tabName = "DetaiInfo",
+              fluidPage(
               fluidRow(
                 column(
-                  width = 12,
+                  width = 8,
+                  offset = 2,
                   align = "center",
                   div(
-                    style = "background-color: #d36d6d; height: 100px;",
-                    h3(style = "font-size: 50px; margin-top: 5px;", "Interactive Table for Wines"),
-                    p(style = "font-size: 16px; margin-top: 10px; margin-bottom: 30px;", "In case you are searching for a wine with specific criteria, use this tool to find the best-fitted wine. \n")
+                    style = "color: #ffffff; background-color: #ad3c3c; height: 85px; border: 6px double white",
+                    h3(style = "font-size: 30px; text-align:center;", "Interactive Table for Wines")
                   )
                 )
               ),
@@ -63,9 +64,10 @@ ui <- dashboardPage(skin="red",
                 column(
                   width = 12,
                   DTOutput("table"),
-                  style = "margin-top: 10px"
+                  style = "margin-top: 25px"
                   
                 )
+              )
               )
 
       ),
