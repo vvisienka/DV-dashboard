@@ -3,6 +3,7 @@ library(shinydashboard)
 library(plotly)
 library(dplyr)
 library(DT)
+library(shinyWidgets)
 
 ui <- dashboardPage(skin="red",
   dashboardHeader(title = "Wine Dashboard"),
@@ -22,7 +23,7 @@ ui <- dashboardPage(skin="red",
       menuItem("Ratings", tabName = "Ratings", icon = icon("star")),
       menuItem("World Map", tabName = "World", icon = icon("globe"))
     ),
-    tags$img(src = "PP_logotyp_ANG_RGB.png", height = 40, width = 220)
+    tags$img(src = "PP_logotyp_ANG_WHITE.png", height = 40, width = 220)
   ),
   dashboardBody(
     tags$head(
@@ -34,6 +35,7 @@ ui <- dashboardPage(skin="red",
                 box(
                   width = 12,
                   valueBoxOutput("rowCountBox"),
+                  valueBoxOutput("rowAvgPriceBox"),
                   valueBoxOutput("rowPriceBox"),
                   footer = uiOutput("wineImage", style = "width: 100%; height: 100%;")
                 )
@@ -49,19 +51,19 @@ ui <- dashboardPage(skin="red",
       ),
       tabItem(tabName = "DetaiInfo",
               fluidPage(
-              fluidRow(
-                column(
-                  width = 8,
-                  offset = 2,
+              
+                box(
+                  width = 12,
+                  offset = 6,
                   align = "center",
                   div(
                     style = "color: #ffffff; background-color: #ad3c3c; height: 85px; border: 6px double white",
                     h3(style = "font-size: 30px; text-align:center;", "Interactive Table for Wines")
                   )
-                )
+                
               ),
               fluidRow(
-                column(
+                box(
                   width = 12,
                   DTOutput("table"),
                   style = "margin-top: 25px"
@@ -73,6 +75,8 @@ ui <- dashboardPage(skin="red",
       ),
       tabItem(tabName = "MoreInformations",
               fluidPage(
+                chooseSliderSkin("Flat"),
+                
                 box(
                   title = "Choose Year and Country to get the most expensive wine ",
                   selectInput(inputId = "year",
@@ -88,15 +92,23 @@ ui <- dashboardPage(skin="red",
                   
                 ),
                 box(
-                  title =" TU BEDZIE WYKRES zaleznosci ceny od roku / moze i  kraju"
+                  title = "choosing the year for wine to get the mean price and the most expensive",
+                  sliderInput("sliderYear", "Year:",sep="",
+                              min = 1961, max = 2020, value = c(1990,2000), step = 1)
+                ),
+                box(
+                  plotlyOutput("winePlot")
                 )
               ))
     )
   )
 )
 
-server <- function(input, output, session) { # Dodaj argument `session`
-  
+years <- as.character(2000:2022)
+
+
+server <- function(input, output, session) {
+  help_data = NULL
   # choosing dataset basing on the input
   current_data <- reactive({
     switch(input$chooseDataset,
@@ -127,9 +139,10 @@ server <- function(input, output, session) { # Dodaj argument `session`
       "Number of different wines",
       icon = icon("wine-glass"),
       color="red"
-    )
+      )
   })
   
+  # making value box 2
   output$rowPriceBox <- renderValueBox({
     avg_price <- mean(current_data()$Price, na.rm = TRUE)
     avg_price_rounded <- round(avg_price, 2)
@@ -138,19 +151,23 @@ server <- function(input, output, session) { # Dodaj argument `session`
       avg_price_rounded,
       "Average Price",
       icon = icon("dollar-sign"),
-      color = "red"
+      color = "red",
     )
   })
   
-  # making value box 2
-  output$rowCountBox2 <- renderValueBox({
+  # making value box 3
+  output$rowAvgPriceBox <- renderValueBox({
+    avg_rating <- mean(current_data()$Rating, na.rm = TRUE)
+    avg_rating <- round(avg_rating, 2)
+    
     valueBox(
-      nrow(current_data()),
-      "Other Data",
-      icon = icon("info"),
-      color = "blue"
+      avg_rating,
+      "Average Rating",
+      icon = icon("star"),
+      color = "orange"
     )
   })
+  
   
   # making barplot for top 5 frequent regions
   output$regionPlot <- renderPlotly({
@@ -166,14 +183,13 @@ server <- function(input, output, session) { # Dodaj argument `session`
     
     country_colors <- c("#F51313", "#BD0E0E", "#9E0C0C", "#7A0909", "#4F0606")
     
-    
     plot_ly(data_aggregated, 
             x = ~n, 
             y = ~Region, 
             type = 'bar', 
             hovertemplate = "Amount of wine:<br> %{x}",
-            color = ~Country,  # Assigning color based on Country
-            colors = country_colors,  # Using custom color scale
+            color = ~Country,  
+            colors = country_colors, 
             showlegend = TRUE,
             width = 800,
             height = 400) %>%
@@ -181,8 +197,6 @@ server <- function(input, output, session) { # Dodaj argument `session`
              xaxis = list(title = "Frequency"), 
              yaxis = list(title = "Region"),
              margin = list(t = 100)) 
-    
-    
   })
   
   # The prettyTable function
@@ -207,6 +221,31 @@ server <- function(input, output, session) { # Dodaj argument `session`
   output$table <- renderDT({
     prettyTable(current_data())
   })
+  
+
+  output$winePlot <- renderPlotly({
+    
+    selected_years <- seq(2000, 2005, by = 1)
+    
+    help_data <- current_data()
+    
+    help_data <- help_data %>%
+      filter(Year != "N.V.") %>%
+      mutate(Year = as.numeric(Year)) %>%
+      filter(Year %in% selected_years)
+    
+    help_data <- help_data %>%
+      group_by(Year) %>%
+      summarise(avg_price = mean(Price, na.rm = TRUE))
+    
+    plot_ly(data = help_data, x = ~Year, y = ~avg_price, type = "scatter") %>%
+      layout(title = "Average Price of Wine Over Selected Years",
+             xaxis = list(title = "Year"),
+             yaxis = list(title = "Average Price"))
+  })
+  
+  
+  
   
   observe({
     data <- current_data()
