@@ -78,25 +78,23 @@ ui <- dashboardPage(skin="red",
                 chooseSliderSkin("Flat"),
                 
                 box(
-                  title = "Choose Year and Country to get the most expensive wine ",
-                  tags$div(class='select', selectInput(inputId = "year",
-                              label = "Year",
-                              choices = NULL
-                  )),
-                   selectInput(inputId = "country",
-                              label = "Country",
-                              choices = NULL
-                  ),
-                  tags$img(src = "expensiveWine.jpg", height = 300, width = "100%"),
-                  verbatimTextOutput("expensiveWineInfo")
+                  width = 3,
+                  title = "The most expensive wine in choosen Year and Country",
+                  tags$img(src = "expensiveWine.jpg", height = "100%", width = "100%"),
                   
                 ),
                 box(
+                  width = 3,
+                  verbatimTextOutput("expensiveWineInfo")
+                ),
+                box(
+                  width = 6,
                   title = "choosing the year for wine to get the mean price and the most expensive",
                   sliderInput("sliderYear", "Year:",sep="",
                               min = 1961, max = 2020, value = c(1990,2000), step = 1)
                 ),
                 box(
+                  width = 12,
                   plotlyOutput("winePlot")
                 )
               ))
@@ -109,6 +107,11 @@ years <- as.character(2000:2022)
 
 server <- function(input, output, session) {
   help_data = NULL
+  help_data_2 = NULL
+  value_Years <- reactiveValues(selected_years = NULL)
+  value_Country <- reactiveValues(selected_country = NULL)
+  
+  
   # choosing dataset basing on the input
   current_data <- reactive({
     switch(input$chooseDataset,
@@ -223,9 +226,10 @@ server <- function(input, output, session) {
   })
   
 
+  # plot from prices in countires
   output$winePlot <- renderPlotly({
     
-    selected_years <- seq(2000, 2005, by = 1)
+    selected_years <- seq(input$sliderYear[1], input$sliderYear[2])
     
     help_data <- current_data()
     
@@ -235,31 +239,42 @@ server <- function(input, output, session) {
       filter(Year %in% selected_years)
     
     help_data <- help_data %>%
-      group_by(Year) %>%
+      group_by(Year, Country) %>%
       summarise(avg_price = mean(Price, na.rm = TRUE))
     
-    plot_ly(data = help_data, x = ~Year, y = ~avg_price, type = "scatter") %>%
-      layout(title = "Average Price of Wine Over Selected Years",
-             xaxis = list(title = "Year"),
-             yaxis = list(title = "Average Price"))
+    
+    plot_ly(source = "plot_wine") %>%
+      add_trace(data = help_data,
+                x = ~ Year,
+                y = ~ avg_price,
+                color = ~Country,
+                type = "bar") %>%
+      layout(title = "Avergae price in choosen Year in different Countries",
+             yaxis = list(title = "Average price"),
+             xaxis = list(title = "Years")) %>%
+      event_register("plotly_click")
   })
   
+  observeEvent(event_data(event = "plotly_click", source = "plot_correlation"),
+     {
+       clicked = event_data(event = "plotly_click",source = "plot_correlation")
+       if (!is.null(clicked)) {
+         value_Years$selected_Years = clicked$x
+       }
+     })
   
-  
-  
-  observe({
-    data <- current_data()
-    updateSelectInput(session, "year", label = "Year", choices = unique(data$Year))
-    updateSelectInput(session, "country", label = "Country", choices = unique(data$Country))
-  })
   
   output$expensiveWineInfo <- renderText({
-    req(input$year, input$country)
+    validate(need(value_Years$selected_Years, message = "Click choosen point on the plot"))
     
-    filtered_data <- current_data() %>%
-      filter(Year == input$year, Country == input$country)
+    help_data_2 <- current_data()
     
-    expensive_wine <- filtered_data[which.max(filtered_data$Price), ]
+    help_data_2 <- help_data_2 %>%
+      filter(Year != "N.V.") %>%
+      mutate(Year = as.numeric(Year)) %>%
+      filter(Year == value_Years$selected_Years)
+    
+    expensive_wine <- help_data_2[which.max(help_data_2$Price), ]
     
     expensive_wine_info <- paste("Name: ", expensive_wine$Name, "\n",
                                  "Price: ", expensive_wine$Price, "\n",
