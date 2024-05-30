@@ -13,9 +13,9 @@ ui <- dashboardPage(skin="red",
     ),
     sidebarMenu(
       br(),
-      selectInput("chooseDataset", "Choose Wine Type",
+      tags$div(class='select',selectInput("chooseDataset", "Choose Wine Type",
                              choices = c("All", "Red", "Rose", "Sparkling", "White"),
-                             selected = "All"),
+                             selected = "All")),
       br(),
       menuItem("Basic Informations", tabName = "BasicInfo", icon = icon("info")),
       menuItem("Details Informations", tabName = "DetaiInfo", icon = icon("book")),
@@ -79,11 +79,11 @@ ui <- dashboardPage(skin="red",
                 
                 box(
                   title = "Choose Year and Country to get the most expensive wine ",
-                  selectInput(inputId = "year",
+                  tags$div(class='select', selectInput(inputId = "year",
                               label = "Year",
                               choices = NULL
-                  ),
-                  selectInput(inputId = "country",
+                  )),
+                   selectInput(inputId = "country",
                               label = "Country",
                               choices = NULL
                   ),

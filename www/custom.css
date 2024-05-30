@@ -3,7 +3,6 @@
 
 
 /* colors */
-
 .skin-red .main-header .navbar {
   background-color: #ad3c3c;
 }
@@ -82,17 +81,28 @@
   margin-top: 50px;
 }
 
-/* make the list white*/
-.selectize-dropdown-content .option {
-  background-color: #FFFFFF !important; /* Ustawienie białego tła */
-  color: #000000 !important; /* Ustawienie czarnego tekstu */
+
+
+/* --- SELECT --- */
+.select .selectize-input {
+  border-color: #41424C;
+  box-shadow:none !important;
+  
 }
 
-.selectize-dropdown-content .option:hover {
-  background-color: #ad3c3c !important; /* Ustawienie czerwonego tła po najechaniu kursorem */
+.select .selectize-dropdown-content .option {
+  background-color: #ffffff !important;
+  color: #41424C;
 }
-.selectize-input.focus {
-  border-color: #ffffff ;
+
+.select .selectize-dropdown-content .active {
+  background-color: #990c0c !important;
+  color: #ffffff;
+}
+
+.selectize-dropdown-content .active:hover {
+  background-color: #990c0c !important;
+  color: #ffffff;
 }
 
   
