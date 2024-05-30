@@ -255,9 +255,9 @@ server <- function(input, output, session) {
       event_register("plotly_click")
   })
   
-  observeEvent(event_data(event = "plotly_click", source = "plot_correlation"),
+  observeEvent(event_data(event = "plotly_click", source = "plot_wine"),
      {
-       clicked = event_data(event = "plotly_click",source = "plot_correlation")
+       clicked = event_data(event = "plotly_click",source = "plot_wine")
        if (!is.null(clicked)) {
          value_Years$selected_Years = clicked$x
        }
