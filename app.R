@@ -44,15 +44,8 @@ ui <- dashboardPage(skin="red",
                   valueBoxOutput("rowPriceBox"),
                   footer = uiOutput("wineImage", style = "width: 70%; height: 90%; margin: 0 auto;")
                 )
-              ),
-              fluidRow(
-                box(
-                  width = 12,
-                  plotlyOutput("regionPlot"),
-                  style = "width: 100%;;"
-                 
-                )
               )
+             
       ),
       tabItem(tabName = "DetaiInfo",
               fluidPage(
@@ -81,25 +74,43 @@ ui <- dashboardPage(skin="red",
       tabItem(tabName = "MoreInformations",
               fluidPage(
                 chooseSliderSkin("Flat"),
-                
-                box(
-                  width = 3,
-                  title = "The most expensive wine in choosen Year and Country",
-                  tags$img(src = "expensiveWine.jpg", height = "100%", width = "100%"),
-                  
-                ),
-                box(
-                  width = 3,
-                  verbatimTextOutput("expensiveWineInfo")
-                ),
-                box(
-                  width = 6,
-                  title = "choosing the year for wine to get the mean price and the most expensive",
-                  sliderInput("sliderYear", "Year:",sep="",
-                              min = 1961, max = 2020, value = c(1990,2000), step = 1)
-                ),
+                fluidRow(
+                  box(
+                    width = 6,
+                    
+                    h3(style = "font-size: 30px; text-align:center; margin-bottom: 25px", "The most expensive Wine"),
+                    style = "border: 2px solid #ad3c3c;", 
+                    sliderInput("sliderYear", "Year:",sep="",
+                                min = 1961, max = 2020, value = c(1990,2012), step = 1),
+                    box(
+                      height = 100,
+                      width = 12,
+                      title = "Name",
+                      textOutput("expensiveWineName")
+                    ),
+                    
+                    box(
+                      title = "Price",
+                      height = 90,
+                      textOutput("expensiveWinePrice")
+                    ),
+                    
+                    box(
+                      height = 90,
+                      title = "Country",
+                      textOutput("expensiveWineCountry")
+                    )
+                    
+                  ),
+                  box(
+                    height = 434,
+                    style = "border: 2px solid #ad3c3c;", 
+                    tags$img(src = "expensiveWine2.jpg", height = "408px", width = "375px", style = "display: block; margin: 0 auto;")
+                    
+                  )),
                 box(
                   width = 12,
+                  style = "border: 2px solid #990c0c;", 
                   plotlyOutput("winePlot")
                 )
               )),
@@ -133,6 +144,11 @@ ui <- dashboardPage(skin="red",
                 box(
                   width = 12,
                   plotlyOutput("worldMap", height = "520px")
+                ),
+                box(
+                  width = 12,
+                  plotlyOutput("regionPlot"),
+                  style = "width: 100%;"
                 )
               )
       ),
@@ -165,8 +181,7 @@ years <- as.character(2000:2022)
 server <- function(input, output, session) {
   help_data = NULL
   help_data_2 = NULL
-  value_Years <- reactiveValues(selected_years = NULL)
-  value_Country <- reactiveValues(selected_country = NULL)
+  value <- reactiveValues(selected_years = NULL,selected_country = NULL)
   
   
   # choosing dataset basing on the input
@@ -256,7 +271,7 @@ server <- function(input, output, session) {
       layout(
         title = list(text = "Top 5 Regions: Most Frequent Wine Producers", x = 0.5), 
         xaxis = list(title = "Frequency"), 
-        yaxis = list(title = list(text = "Region", titlefont = list(pad = 20))),
+        yaxis = list(title = list(text = "Region", titlefont = list(pad = 20)),tickangle = 20),
         margin = list(l = 250, r = 20)
       )
     
@@ -287,6 +302,8 @@ server <- function(input, output, session) {
   
 
   # plot from prices in countires
+  
+  # plot from prices in countires
   output$winePlot <- renderPlotly({
     
     selected_years <- seq(input$sliderYear[1], input$sliderYear[2])
@@ -298,50 +315,99 @@ server <- function(input, output, session) {
       mutate(Year = as.numeric(Year)) %>%
       filter(Year %in% selected_years)
     
+    help_data11 <- current_data()
+    
+    help_data11 <- help_data %>%
+      group_by(Year) %>%
+      summarise(avg_price = round(mean(Price, na.rm = TRUE),2))
+    
+    
     help_data <- help_data %>%
       group_by(Year, Country) %>%
-      summarise(avg_price = mean(Price, na.rm = TRUE))
+      summarise(avg_price = round(mean(Price, na.rm = TRUE),2))
     
     
     plot_ly(source = "plot_wine") %>%
       add_trace(data = help_data,
                 x = ~ Year,
                 y = ~ avg_price,
-                color = ~Country,
-                type = "bar") %>%
-      layout(title = "Avergae price in choosen Year in different Countries",
+                color = ~ Country,
+                colors = c("#67000d","#a50f15","#cb181d","#ef3b2c","#fb6a4a","#ec7014","#fc9272","#fcbba1","#fe9929","#fdd0a2","#fee0d2",
+                           "#deebf7","#c6dbef","#a6bddb","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#253494","#08306b","#081d58",
+                           "#004529","#006837","#238443","#41ab5d","#78c679","#addd8e","#d9f0a3","#f7fcb9"),
+                type = "scatter",
+                mode = "markers",
+                marker = list(size = 10),
+                hovertemplate = ~paste("Rok: ", Year, "\n Average price: ", avg_price, "$"),
+                customdata = ~Country
+      ) %>%
+      add_trace(data = help_data11,
+                x = ~ Year,
+                y = ~ avg_price,
+                type = "scatter",
+                mode = "lines",
+                line = list(color = "#A30446"),
+                name = "Average price for Year"
+      ) %>%
+      layout(title = "Average price in different Countries through Years",
              yaxis = list(title = "Average price"),
-             xaxis = list(title = "Years")) %>%
+             xaxis = list(title = "Years",
+                          tickmode = "linear",
+                          dtick = 1,
+                          tickangle = 45)) %>%
       event_register("plotly_click")
+    
   })
   
-  observeEvent(event_data(event = "plotly_click", source = "plot_wine"),
-     {
-       clicked = event_data(event = "plotly_click",source = "plot_wine")
-       if (!is.null(clicked)) {
-         value_Years$selected_Years = clicked$x
-       }
-     })
+  observeEvent(event_data(event = "plotly_click", source = "plot_wine"), {
+    clicked <- event_data(event = "plotly_click", source = "plot_wine")
+    if (!is.null(clicked)) {
+      value$selected_country <- clicked$customdata
+      value$selected_years <- clicked$x
+    }
+  })
   
   
-  output$expensiveWineInfo <- renderText({
-    validate(need(value_Years$selected_Years, message = "Click choosen point on the plot"))
+  output$expensiveWineName <- renderPrint({
+    validate(need(value$selected_years, message = "Click point on the plot to get the most expensive wine from chosen Year and Country "))
     
     help_data_2 <- current_data()
     
     help_data_2 <- help_data_2 %>%
       filter(Year != "N.V.") %>%
       mutate(Year = as.numeric(Year)) %>%
-      filter(Year == value_Years$selected_Years)
+      filter(Year == value$selected_years, Country == value$selected_country)
     
     expensive_wine <- help_data_2[which.max(help_data_2$Price), ]
     
-    expensive_wine_info <- paste("Name: ", expensive_wine$Name, "\n",
-                                 "Price: ", expensive_wine$Price, "\n",
-                                 "Country: ", expensive_wine$Country)
-    
+    expensive_wine_info <- paste(expensive_wine$Name)
     HTML(expensive_wine_info)
   })
+  
+  output$expensiveWinePrice <- renderPrint({
+    validate(need(value$selected_years, message =""))
+    
+    help_data_2 <- current_data()
+    
+    help_data_2 <- help_data_2 %>%
+      filter(Year != "N.V.") %>%
+      mutate(Year = as.numeric(Year)) %>%
+      filter(Year == value$selected_years, Country == value$selected_country)
+    
+    expensive_wine <- help_data_2[which.max(help_data_2$Price), ]
+    
+    expensive_wine_info <- paste(expensive_wine$Price, "$")
+    HTML(expensive_wine_info)
+  })
+  
+  output$expensiveWineCountry <- renderPrint({
+    validate(need(value$selected_years, message =""))
+    
+    expensive_wine_info <- paste(value$selected_country)
+    HTML(expensive_wine_info)
+  })
+  
+  
 
 
   output$ratingPlot <- renderPlotly({
