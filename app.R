@@ -4,6 +4,10 @@ library(plotly)
 library(dplyr)
 library(DT)
 library(shinyWidgets)
+library(rnaturalearth)
+library(sf)
+library(ggplot2)
+
 
 ui <- dashboardPage(skin="red",
   dashboardHeader(title = "Wine Dashboard"),
@@ -17,10 +21,11 @@ ui <- dashboardPage(skin="red",
                              choices = c("All", "Red", "Rose", "Sparkling", "White"),
                              selected = "All")),
       br(),
-      menuItem("Basic Informations", tabName = "BasicInfo", icon = icon("info")),
-      menuItem("Details Informations", tabName = "DetaiInfo", icon = icon("book")),
+      menuItem("About", tabName = "About", icon = icon("question")),
+      menuItem("Wine Overview", tabName = "BasicInfo", icon = icon("info")),
+      menuItem("Details Information", tabName = "DetaiInfo", icon = icon("book")),
       menuItem("Prices in Countries", tabName = "MoreInformations", icon = icon("book-open")),
-      menuItem("Ratings", tabName = "Ratings", icon = icon("star")),
+      menuItem("Ratings", tabName = "RatingPrice", icon = icon("star")),
       menuItem("World Map", tabName = "World", icon = icon("globe"))
     ),
     tags$img(src = "PP_logotyp_ANG_WHITE.png", height = 40, width = 220)
@@ -37,14 +42,14 @@ ui <- dashboardPage(skin="red",
                   valueBoxOutput("rowCountBox"),
                   valueBoxOutput("rowAvgPriceBox"),
                   valueBoxOutput("rowPriceBox"),
-                  footer = uiOutput("wineImage", style = "width: 100%; height: 100%;")
+                  footer = uiOutput("wineImage", style = "width: 70%; height: 90%; margin: 0 auto;")
                 )
               ),
               fluidRow(
                 box(
                   width = 12,
                   plotlyOutput("regionPlot"),
-                  style = "width: 100%; overflow-x: scroll;"
+                  style = "width: 100%;;"
                  
                 )
               )
@@ -97,7 +102,59 @@ ui <- dashboardPage(skin="red",
                   width = 12,
                   plotlyOutput("winePlot")
                 )
+              )),
+      tabItem(tabName="RatingPrice",
+              fluidPage(
+                box(
+                  width = 12,
+                  offset = 6,
+                  align = "center",
+                  div(
+                    style = "color: #ffffff; background-color: #ad3c3c; height: 85px; border: 6px double white",
+                    h3(style = "font-size: 30px; text-align:center;", "Rating's Influence on the Price")
+                  )),
+                fluidRow(
+                
+                  box(
+                    width = 6,
+                    height = 540,
+                    plotlyOutput("ratingPlot")
+                  ),
+                  box(
+                    width = 6,
+                    height = 540,
+                    DTOutput("topWinesTable")
+                  )
+                )
+              )
+      ),
+      tabItem(tabName = "World",
+              fluidPage(
+                box(
+                  width = 12,
+                  plotlyOutput("worldMap", height = "520px")
+                )
+              )
+      ),
+      tabItem(tabName="About",
+              fluidPage(
+                div(
+                  style = "color: #ffffff; background-color: #ad3c3c; width: 80%; height: 485px; border: 6px double white; margin: 0 auto;",
+                  h3(style = "font-size: 30px; text-align:center;", "Hey there!"),
+                  h4(style = "font-size: 20px; text-align:center;", "Ready to uncork the ultimate wine adventure?"),
+                  h4(style = "font-size: 20px; text-align:center;", "Our Wine Dashboard's got all the cool stuff you need to become a grape guru! 🍇🎉 "),
+                  br(),br(),
+                  h4(style = "font-size: 16px; text-align:center;", "1. Quick wine facts – no boring lectures, check the features of the data. 🍷"),
+                  h4(style = "font-size: 16px; text-align:center;", "2. Deep dive into the deets – for serious wine buffs only! 🤓"),
+                  h4(style = "font-size: 16px; text-align:center;", "3. Check out global wine prices – find the best deals worldwide. 💸"),
+                  h4(style = "font-size: 16px; text-align:center;", "4. Explore how ratings affect prices – wine math made easy! 📊"),
+                  h4(style = "font-size: 16px; text-align:center;", "5. See which wine regions are buzzing with activity. 🌍"),
+                  br(), br(),
+                  h4(style = "font-size: 20px; text-align:center;", "So, what are you waiting for? Let's pop the cork and pour out some fun!"),
+                  h4(style = "font-size: 20px; text-align:center;", "Cheers to good times and great wine! 🍷✨")
+              )
               ))
+      
     )
   )
 )
@@ -190,16 +247,19 @@ server <- function(input, output, session) {
             x = ~n, 
             y = ~Region, 
             type = 'bar', 
-            hovertemplate = "Amount of wine:<br> %{x}",
+            hovertemplate = "Number of wines:<br> %{x}",
             color = ~Country,  
             colors = country_colors, 
             showlegend = TRUE,
             width = 800,
             height = 400) %>%
-      layout(title = "Top 5 Regions by Frequency",
-             xaxis = list(title = "Frequency"), 
-             yaxis = list(title = "Region"),
-             margin = list(t = 100)) 
+      layout(
+        title = list(text = "Top 5 Regions: Most Frequent Wine Producers", x = 0.5), 
+        xaxis = list(title = "Frequency"), 
+        yaxis = list(title = list(text = "Region", titlefont = list(pad = 20))),
+        margin = list(l = 250, r = 20)
+      )
+    
   })
   
   # The prettyTable function
@@ -282,11 +342,82 @@ server <- function(input, output, session) {
     
     HTML(expensive_wine_info)
   })
+
+
+  output$ratingPlot <- renderPlotly({
+    rating_data <- current_data() %>%
+      mutate(Rating_Group = ifelse(Rating < 3.5, "<3.5", as.character(Rating))) %>%
+      group_by(Rating_Group) %>%
+      summarize(median_price = median(Price, na.rm = TRUE))
+    
+    plot_ly(rating_data, 
+            x = ~Rating_Group,
+            y = ~median_price, 
+            type = 'bar',
+            hovertemplate = "Median Price: $%{y} <br> Rating: %{x}",
+            name = ' ',
+            height = 500,
+            marker = list(color = '#ad3c3c')) %>%
+      layout(
+        title = "Median Price Distribution by Rating",
+        xaxis = list(title = "Rating"),
+        yaxis = list(title = "Median Price ($)"),
+        margin = list(t = 100)
+  )})
   
   
+  output$topWinesTable <- renderDT({
+    filtered_data <- current_data() %>%
+      mutate(rating_price_ratio = round(Rating / Price, digits=3)) %>%
+      select(Name, rating_price_ratio) %>%
+      arrange(desc(rating_price_ratio)) %>%
+      rename(`Rating/Price Ratio` = rating_price_ratio) %>%
+      slice(1:30)
+    
+    datatable(filtered_data)
+  })
   
+  output$worldMap <- renderPlotly({
+    # Read world map data
+    world_map <- ne_countries(scale = "medium", returnclass = "sf") %>%
+      filter(admin != "Antarctica") %>%
+      arrange(admin)
+    
+    target_crs <- "+proj=moll"
+    world_moll <- world_map %>% st_transform(crs = target_crs)
+    
+    # Aggregating the data by country
+    world_data <- current_data() %>%
+      group_by(Country) %>%
+      summarise(
+        wine_count = n(),
+        avg_price = round(mean(Price, na.rm = TRUE), 2),
+        avg_rating = round(mean(Rating, na.rm = TRUE), 2)
+      ) %>%
+      ungroup() %>%
+      select(wine_count, avg_price, avg_rating, Country)
+    
+    world_data <- world_data %>%
+      mutate(info = paste(
+        "<br>",
+        "Country: ", Country, "<br>",
+        "Number of Wines: ", wine_count, "<br>",
+        "Average Price: $", avg_price, "<br>",
+        "Average Rating: ", avg_rating
+      ))
+    
+    # Merge map data with aggregated wine data
+    base_map <- world_moll %>%
+      left_join(world_data, by = c("admin" = "Country")) %>%
+      ggplot(aes(fill = wine_count, label = info)) +
+      geom_sf() +
+      scale_fill_gradient(low = "#cc8585", high = '#6b0808') +
+      labs(fill = "Number of Wines", title = "World Map of Wines") +
+      theme(plot.title = element_text(hjust = 0.5))
+    
+    ggplotly(base_map, tooltip = "label")
+  })
   
 }
-
 # Run the application
 shinyApp(ui = ui, server = server)
