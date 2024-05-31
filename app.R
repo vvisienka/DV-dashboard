@@ -24,7 +24,7 @@ ui <- dashboardPage(skin="red",
       menuItem("About", tabName = "About", icon = icon("question")),
       menuItem("Wine Overview", tabName = "BasicInfo", icon = icon("info")),
       menuItem("Details Information", tabName = "DetaiInfo", icon = icon("book")),
-      menuItem("Prices in Countries", tabName = "MoreInformations", icon = icon("book-open")),
+      menuItem("Prices in Countries", tabName = "MoreInformations", icon = icon("dollar-sign")),
       menuItem("Ratings", tabName = "RatingPrice", icon = icon("star")),
       menuItem("World Map", tabName = "World", icon = icon("globe"))
     ),
@@ -148,7 +148,7 @@ ui <- dashboardPage(skin="red",
                 box(
                   width = 12,
                   plotlyOutput("regionPlot"),
-                  style = "width: 100%;"
+                  style = "width: 100%; overflow-x: scroll;"
                 )
               )
       ),
@@ -223,7 +223,7 @@ server <- function(input, output, session) {
     avg_price_rounded <- round(avg_price, 2)
     
     valueBox(
-      avg_price_rounded,
+      paste(avg_price_rounded,"$"),
       "Average Price",
       icon = icon("dollar-sign"),
       color = "red",
@@ -347,10 +347,10 @@ server <- function(input, output, session) {
                 type = "scatter",
                 mode = "lines",
                 line = list(color = "#A30446"),
-                name = "Average price for Year"
+                name = "Average Price for Year"
       ) %>%
       layout(title = "Average price in different Countries through Years",
-             yaxis = list(title = "Average price"),
+             yaxis = list(title = "Average price ($)"),
              xaxis = list(title = "Years",
                           tickmode = "linear",
                           dtick = 1,
