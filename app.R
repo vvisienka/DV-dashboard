@@ -135,7 +135,7 @@ ui <- dashboardPage(skin="red",
                   box(
                     width = 6,
                     height = 610,
-                    style = "overflow-y: auto;",                     
+                    style = "overflow-y: auto; height: 100%;",                     
                     DTOutput("topWinesTable")
                   )
                 )
