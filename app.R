@@ -103,13 +103,14 @@ ui <- dashboardPage(skin="red",
                     
                   ),
                   box(
+                    width = 6,
                     height = 434,
                     style = "border: 2px solid #ad3c3c;", 
                     tags$img(src = "expensiveWine2.jpg", height = "408px", width = "375px", style = "display: block; margin: 0 auto;")
                     
                   )),
                 box(
-                  width = 12,
+                  width = 14,
                   style = "border: 2px solid #990c0c;", 
                   plotlyOutput("winePlot")
                 )
@@ -254,7 +255,10 @@ server <- function(input, output, session) {
     
     data_aggregated <- data_aggregated %>%
       arrange(desc(n)) %>%
-      slice(1:5)
+      slice(1:5) %>%
+      arrange(n)
+    
+    data_aggregated$Region <- factor(data_aggregated$Region, levels = data_aggregated$Region)
     
     country_colors <- c("#F51313", "#BD0E0E", "#9E0C0C", "#7A0909", "#4F0606")
     
@@ -271,7 +275,7 @@ server <- function(input, output, session) {
       layout(
         title = list(text = "Top 5 Regions: Most Frequent Wine Producers", x = 0.5), 
         xaxis = list(title = "Frequency"), 
-        yaxis = list(title = list(text = "Region", titlefont = list(pad = 20)),tickangle = 20),
+        yaxis = list(title = list(text = "Region", standoff = 30)),
         margin = list(l = 250, r = 20)
       )
     
@@ -437,8 +441,7 @@ server <- function(input, output, session) {
       mutate(rating_price_ratio = round(Rating / Price, digits=3)) %>%
       select(Name, rating_price_ratio) %>%
       arrange(desc(rating_price_ratio)) %>%
-      rename(`Rating/Price Ratio` = rating_price_ratio) %>%
-      slice(1:30)
+      rename(`Rating/Price Ratio` = rating_price_ratio)
     
     datatable(filtered_data)
   })
@@ -483,6 +486,7 @@ server <- function(input, output, session) {
     
     ggplotly(base_map, tooltip = "label")
   })
+  
   
 }
 # Run the application
