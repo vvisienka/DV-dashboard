@@ -129,12 +129,13 @@ ui <- dashboardPage(skin="red",
                 
                   box(
                     width = 6,
-                    height = 540,
+                    height = 610,
                     plotlyOutput("ratingPlot")
                   ),
                   box(
                     width = 6,
-                    height = 540,
+                    height = 610,
+                    style = "overflow-y: auto;",                     
                     DTOutput("topWinesTable")
                   )
                 )
