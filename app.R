@@ -79,7 +79,6 @@ ui <- dashboardPage(skin="red",
                     width = 6,
                     
                     h3(style = "font-size: 30px; text-align:center; margin-bottom: 25px", "The most expensive Wine"),
-                    style = "border: 2px solid #ad3c3c;", 
                     sliderInput("sliderYear", "Year:",sep="",
                                 min = 1961, max = 2020, value = c(1990,2012), step = 1),
                     box(
@@ -105,13 +104,11 @@ ui <- dashboardPage(skin="red",
                   box(
                     width = 6,
                     height = 434,
-                    style = "border: 2px solid #ad3c3c;", 
                     tags$img(src = "expensiveWine2.jpg", height = "408px", width = "375px", style = "display: block; margin: 0 auto;")
                     
                   )),
                 box(
                   width = 14,
-                  style = "border: 2px solid #990c0c;", 
                   plotlyOutput("winePlot")
                 )
               )),
