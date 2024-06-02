@@ -4,7 +4,7 @@ library(plotly)
 library(dplyr)
 library(DT)
 library(shinyWidgets)
-library(rnaturalearth)
+library(maps)
 library(sf)
 library(ggplot2)
 
@@ -275,7 +275,7 @@ server <- function(input, output, session) {
             height = 400) %>%
       layout(
         title = list(text = "Top 5 Regions: Most Frequent Wine Producers", x = 0.5), 
-        xaxis = list(title = "Frequency"), 
+        xaxis = list(title = "Frequency", range=c(1, 400)), 
         yaxis = list(title = list(text = "Region", standoff = 30)),
         margin = list(l = 250, r = 20)
       )
@@ -355,7 +355,7 @@ server <- function(input, output, session) {
                 name = "Average Price for Year"
       ) %>%
       layout(title = "Average price in different Countries through Years",
-             yaxis = list(title = "Average price ($)"),
+             yaxis = list(title = "Average price ($)", range=c(1, 1200)),
              xaxis = list(title = "Years",
                           tickmode = "linear",
                           dtick = 1,
@@ -432,7 +432,7 @@ server <- function(input, output, session) {
       layout(
         title = "Median Price Distribution by Rating",
         xaxis = list(title = "Rating"),
-        yaxis = list(title = "Median Price ($)"),
+        yaxis = list(title = "Median Price ($)", range=c(1, 700)),
         margin = list(t = 100)
   )})
   
@@ -483,7 +483,11 @@ server <- function(input, output, session) {
       geom_sf() +
       scale_fill_gradient(low = "#cc8585", high = '#6b0808') +
       labs(fill = "Number of Wines", title = "World Map of Wines") +
-      theme(plot.title = element_text(hjust = 0.5))
+      theme(plot.title = element_text(hjust = 0.5),
+            panel.background = element_rect(fill = "white"),
+            panel.border = element_rect(color = "black", fill = NA),
+            panel.grid.major = element_line(color = "grey"),
+            panel.grid.minor = element_line(color = "lightgrey"))
     
     ggplotly(base_map, tooltip = "label")
   })
