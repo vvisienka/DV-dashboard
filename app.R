@@ -7,6 +7,7 @@ library(shinyWidgets)
 library(maps)
 library(sf)
 library(ggplot2)
+library(rnaturalearth)
 
 
 ui <- dashboardPage(skin="red",
