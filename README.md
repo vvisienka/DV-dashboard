@@ -1,6 +1,7 @@
 # Wine Dashboard
 ## Authors: Joanna Szczublińska, Lidia Wiśniewska
 
+
 Created for Data Visualization course. This dashboard enables you to:
 
 - choose specific type of wine to be presented on the dashboard
@@ -10,6 +11,6 @@ Created for Data Visualization course. This dashboard enables you to:
 - check the influence of rating on price, study table with price/rating ratio
 - observe where the wines come from on a world map and get the top 5 most frequent production regions
 
-Link to live demo: https://vvisienka.shinyapps.io/Wine-Dashboard
 
+Link to live demo: https://vvisienka.shinyapps.io/Wine-Dashboard
 **REMARK** - Unfortunately there is a problem with the rnaturalearth library, which is why the world map does not load, but it works in RStudio.
