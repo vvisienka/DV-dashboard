@@ -13,4 +13,5 @@ Created for Data Visualization course. This dashboard enables you to:
 
 <br>
 Link to live demo: https://vvisienka.shinyapps.io/Wine-Dashboard
+
 **REMARK** - Unfortunately there is a problem with the rnaturalearth library, which is why the world map does not load, but it works in RStudio.
